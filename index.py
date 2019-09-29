@@ -44,6 +44,17 @@ def get_column_name():
         col29 = 'Перекрытия'
         col30 = 'Фасад'
         col31 = 'Фундамент'
+        col32 = 'Количество вводов в дом, ед.'
+        col33 = 'Объем выгребных ям, куб. м.'
+        col34 = 'Вентиляция'
+        col35 = 'Водоотведение'
+        col36 = 'Система водостоков'
+        col37 = 'Газоснабжение'
+        col38 = 'Горячее водоснабжение'
+        col39 = 'Система пожаротушения'
+        col40 = 'Теплоснабжение'
+        col41 = 'Холодное водоснабжение'
+        col42 = 'Электроснабжение'
 
         writer.writerow((col1,
                         col2,
@@ -75,10 +86,21 @@ def get_column_name():
                         col28,
                         col29,
                         col30,
-                        col31))
-                        
+                        col31,
+                        col32,
+                        col33,
+                        col34,
+                        col35,
+                        col36,
+                        col37,
+                        col38,
+                        col39,
+                        col40,
+                        col41,
+                        col42))
+
 def write_csv(data):
-    with open('cmc.csv', 'a', encoding='utf-8', newline='') as f:
+    with open('cmc.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow((data['address'],
                         data['year'],
@@ -110,7 +132,18 @@ def write_csv(data):
                         data['refuse_chute'],
                         data['overlapping'],
                         data['facade'],
-                        data['foundation']))
+                        data['foundation'],
+                        data['number_inputs'],
+                        data['volume_cesspools'],
+                        data['ventilation'],
+                        data['water_disposal'],
+                        data['drainage_system'],
+                        data['gas_supply'],
+                        data['hot_water_supply'],
+                        data['extinguishing_system'],
+                        data['heat_supply'],
+                        data['cold_water_supply'],
+                        data['electrosupply']))
 
 def get_page_data(html):
     soup = BeautifulSoup(html, 'lxml')
@@ -146,6 +179,17 @@ def get_page_data(html):
     overlapping = '-'
     facade = '-'
     foundation = '-'
+    number_inputs = '-'
+    volume_cesspools = '-'
+    ventilation = '-'
+    water_disposal = '-'
+    drainage_system = '-'
+    gas_supply = '-'
+    hot_water_supply = '-'
+    extinguishing_system = '-'
+    heat_supply = '-'
+    cold_water_supply = '-'
+    electrosupply = '-'
 
     trs = soup.find_all('tr')
     for tr in trs:
@@ -241,6 +285,40 @@ def get_page_data(html):
 
             if (tds[i].text == 'Фундамент'):
                 foundation = tds[-1].text
+
+            if (tds[i].text == 'Количество вводов в дом, ед.'):
+                number_inputs = tds[-1].text
+
+            if (tds[i].text == 'Объем выгребных ям, куб. м.'):
+                volume_cesspools = tds[-1].text
+
+            if (tds[i].text == 'Вентиляция'):
+                ventilation = tds[-1].text
+
+            if (tds[i].text == 'Водоотведение'):
+                water_disposal = tds[-1].text
+
+            if (tds[i].text == 'Система водостоков'):
+                drainage_system = tds[-1].text
+
+            if (tds[i].text == 'Газоснабжение'):
+                gas_supply = tds[-1].text
+
+            if (tds[i].text == 'Горячее водоснабжение'):
+                hot_water_supply = tds[-1].text
+
+            if (tds[i].text == 'Система пожаротушения'):
+                extinguishing_system = tds[-1].text
+
+            if (tds[i].text == 'Теплоснабжение'):
+                heat_supply = tds[-1].text
+
+            if (tds[i].text == 'Холодное водоснабжение'):
+                cold_water_supply = tds[-1].text
+
+            if (tds[i].text == 'Электроснабжение'):
+                electrosupply = tds[-1].text
+
             i = i + 1
 
     data = {'address': address, 
@@ -273,11 +351,24 @@ def get_page_data(html):
             'refuse_chute': refuse_chute,
             'overlapping': overlapping,
             'facade': facade,
-            'foundation': foundation}
+            'foundation': foundation,
+            'number_inputs': number_inputs,
+            'volume_cesspools': volume_cesspools,
+            'ventilation': ventilation,
+            'water_disposal': water_disposal,
+            'drainage_system': drainage_system,
+            'gas_supply': gas_supply,
+            'hot_water_supply': hot_water_supply,
+            'extinguishing_system': extinguishing_system,
+            'heat_supply': heat_supply,
+            'cold_water_supply': cold_water_supply,
+            'electrosupply': electrosupply}
+
     write_csv(data) 
-        
+
 def main():
-    url = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/538552'
+    # url = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/538552'
+    url = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/275365'
     get_column_name()
     get_page_data(get_html(url))
 
