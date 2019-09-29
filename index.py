@@ -13,6 +13,7 @@ def filter_number(num):
 def get_column_name():
     with open('cmc.csv', 'a', newline='') as f:
         writer = csv.writer(f)
+        col0 = 'Ссылка'
         col1 = 'Адрес'
         col2 = 'Год ввода в эксплуатацию'
         col3 = 'Детская площадка'
@@ -56,7 +57,8 @@ def get_column_name():
         col41 = 'Холодное водоснабжение'
         col42 = 'Электроснабжение'
 
-        writer.writerow((col1,
+        writer.writerow((col0,
+                        col1,
                         col2,
                         col3,
                         col4,
@@ -102,7 +104,8 @@ def get_column_name():
 def write_csv(data):
     with open('cmc.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow((data['address'],
+        writer.writerow((data['url_building'],
+                        data['address'],
                         data['year'],
                         data['child_yard'],
                         data['emergency_house'],
@@ -147,9 +150,15 @@ def write_csv(data):
 
 def get_page_data(html):
     soup = BeautifulSoup(html, 'lxml')
-    ad = soup.find('ul', class_='breadcrumb').find_all('li')[-1].find('a').text.split(',')
-    address = ''.join(ad)
-    # НЕЗАБУДЬ ПОСТАВИТЬ ВСЕ ПЕРЕМЕННЫЕ
+    try:
+        url_building = 'http://dom.mingkh.ru' + soup.find('ul', class_='breadcrumb').find_all('li')[-1].find('a').get('href')
+    except:
+        url_building: '-'
+    try:
+        ad = soup.find('ul', class_='breadcrumb').find_all('li')[-1].find('a').text.split(',')
+        address = ''.join(ad)
+    except: 
+        address = '-'
     year = '-'
     child_yard = '-'
     emergency_house = '-'
@@ -173,6 +182,7 @@ def get_page_data(html):
     type_building = '-'
     equipment = '-'
     number_chutes = '-'
+    bearing_wall = '-'
     square_basement = '-'
     roof = '-'
     refuse_chute = '-'
@@ -321,7 +331,8 @@ def get_page_data(html):
 
             i = i + 1
 
-    data = {'address': address, 
+    data = {'url_building': url_building,
+            'address': address, 
             'year': year,
             'child_yard': child_yard,
             'emergency_house': emergency_house,
@@ -367,10 +378,17 @@ def get_page_data(html):
     write_csv(data) 
 
 def main():
-    # url = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/538552'
-    url = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/275365'
     get_column_name()
-    get_page_data(get_html(url))
+    pattern = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/houses?page={}'
+    for i in range(1, 71):
+        url = pattern.format(str(i))
+        html = get_html(url)
+        soup = BeautifulSoup(html, 'lxml')
+        trs = soup.find('table', class_="table-bordered").find('tbody').find_all('tr')
+        for tr in trs:
+            tds = tr.find_all('td')
+            link = 'http://dom.mingkh.ru' + tds[2].find('a').get('href')
+            get_page_data(get_html(link))
 
 if __name__ == '__main__':
     main()
