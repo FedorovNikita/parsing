@@ -156,7 +156,7 @@ def get_page_data(html):
         url_building: '-'
     try:
         ad = soup.find('ul', class_='breadcrumb').find_all('li')[-1].find('a').text.split(',')
-        address = ''.join(ad)
+        address = 'Челябинск,' + ''.join(ad)
     except: 
         address = '-'
     year = '-'
@@ -380,7 +380,7 @@ def get_page_data(html):
 def main():
     get_column_name()
     pattern = 'http://dom.mingkh.ru/chelyabinskaya-oblast/chelyabinsk/houses?page={}'
-    for i in range(1, 71):
+    for i in range(1, 71): #71
         url = pattern.format(str(i))
         html = get_html(url)
         soup = BeautifulSoup(html, 'lxml')
